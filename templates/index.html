@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock Analyzer - Home</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-light: #4361ee;
+      --primary-dark: #3a56e4;
+      --secondary-light: #3f37c9;
+      --secondary-dark: #2b2d42;
+      --success-light: #4cc9f0;
+      --success-dark: #4895ef;
+      --danger-light: #f72585;
+      --danger-dark: #b5179e;
+      --warning-light: #f8961e;
+      --warning-dark: #f3722c;
+      --info-light: #90e0ef;
+      --info-dark: #00b4d8;
+      --light-bg: #f8f9fa;
+      --dark-bg: #121212;
+      --card-bg-light: #ffffff;
+      --card-bg-dark: #1e1e1e;
+      --text-light: #212529;
+      --text-dark: #f8f9fa;
+      --border-light: #dee2e6;
+      --border-dark: #333333;
+    }
+    
+    [data-bs-theme="light"] {
+      --primary: var(--primary-light);
+      --secondary: var(--secondary-light);
+      --success: var(--success-light);
+      --danger: var(--danger-light);
+      --warning: var(--warning-light);
+      --info: var(--info-light);
+      --bg-color: var(--light-bg);
+      --card-bg: var(--card-bg-light);
+      --text-color: var(--text-light);
+      --border-color: var(--border-light);
+      --header-bg: linear-gradient(135deg, var(--secondary-light) 0%, var(--primary-light) 100%);
+      --footer-bg: linear-gradient(135deg, var(--secondary-light) 0%, var(--primary-light) 100%);
+    }
+    
+    [data-bs-theme="dark"] {
+      --primary: var(--primary-dark);
+      --secondary: var(--secondary-dark);
+      --success: var(--success-dark);
+      --danger: var(--danger-dark);
+      --warning: var(--warning-dark);
+      --info: var(--info-dark);
+      --bg-color: var(--dark-bg);
+      --card-bg: var(--card-bg-dark);
+      --text-color: var(--text-dark);
+      --border-color: var(--border-dark);
+      --header-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      --footer-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      padding-bottom: 60px; /* Added to prevent footer overlap */
+    }
+    
+    .container {
+      padding: 2rem 0;
+      max-width: 1400px; /* Added for better content width */
+    }
+    
+    /* Live Market Ticker */
+    .live-market-ticker {
+      background: linear-gradient(90deg, #1a1a2e, #16213e);
+      color: white;
+      padding: 8px 0;
+      overflow: hidden;
+      position: relative;
+      border-bottom: 2px solid var(--primary);
+    }
+    
+    /* Fade out effect on edges to prevent overlap */
+    .live-market-ticker::before,
+    .live-market-ticker::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    
+    .live-market-ticker::before {
+      left: 0;
+      background: linear-gradient(to right, #1a1a2e, transparent);
+    }
+    
+    .live-market-ticker::after {
+      right: 0;
+      background: linear-gradient(to left, #1a1a2e, transparent);
+    }
+    
+    .ticker-wrapper {
+      display: flex;
+      animation: scroll 30s linear infinite;
+      white-space: nowrap;
+    }
+    
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      margin: 0 40px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    
+    .ticker-symbol {
+      margin-right: 8px;
+      color: #4cc9f0;
+    }
+    
+    .ticker-price {
+      margin-right: 8px;
+    }
+    
+    .ticker-change {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    
+    .ticker-up {
+      background: rgba(76, 201, 240, 0.2);
+      color: #4cc9f0;
+    }
+    
+    .ticker-down {
+      background: rgba(247, 37, 133, 0.2);
+      color: #f72585;
+    }
+    
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    
+    .ticker-wrapper:hover {
+      animation-play-state: paused;
+    }
+
+    /* Header Styles */
+    header {
+      background: var(--header-bg);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    
+    .navbar-brand {
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .navbar-brand i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .nav-link {
+      transition: all 0.3s ease;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      white-space: nowrap; /* Prevent text wrapping */
+    }
+    
+    .nav-link i {
+      margin-right: 8px;
+      font-size: 0.9rem;
+    }
+    
+    .nav-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    
+    .active-nav {
+      background-color: rgba(255, 255, 255, 0.2);
+      font-weight: 600;
+    }
+    
+    /* Theme Toggle */
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      margin-left: 15px;
+    }
+    
+    .theme-toggle:hover {
+      transform: rotate(30deg) scale(1.1);
+    }
+    
+    /* Marquee Styles */
+    .marquee-container {
+      background: var(--card-bg);
+      color: var(--text-color);
+      padding: 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .marquee {
+      padding: 1rem 0;
+      font-weight: 500;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    
+    .marquee-content {
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll-left 60s linear infinite; /* Slower animation for more content */
+      white-space: nowrap;
+      padding-right: 50px; /* Add padding to prevent text from getting too close to the label */
+    }
+    
+    .marquee-content span {
+      display: inline-block;
+      padding: 0 8px;
+    }
+    
+    .market-status {
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: var(--primary);
+      color: white;
+      display: inline-block;
+      margin-right: 1.5rem;
+      border-radius: 8px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+      box-shadow: 10px 0 15px var(--card-bg), -5px 0 10px var(--card-bg); /* Create shadow to hide overlapping text */
+    }
+    
+    /* Gradient mask on the left side to fade out text near the label */
+    .marquee::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 200px;
+      background: linear-gradient(to right, var(--card-bg) 0%, var(--card-bg) 30%, transparent 100%);
+      z-index: 5;
+      pointer-events: none;
+    }
+    
+    @keyframes scroll-left {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    
+    /* Search Form */
+    .search-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      position: relative;
+    }
+    
+    .search-form {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .search-input {
+      border-radius: 50px;
+      padding: 1rem 1.5rem;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--text-color);
+      transition: all 0.3s ease;
+      flex-grow: 1;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.25);
+    }
+    
+    .search-btn {
+      border-radius: 50px;
+      font-weight: 600;
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .search-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+    }
+    
+    .search-btn i {
+      margin-right: 8px;
+    }
+    
+    /* Card Styles */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      height: 100%;
+    }
+    
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header {
+      border-radius: 16px 16px 0 0 !important;
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.25rem 1.5rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-header i {
+      margin-right: 10px;
+      font-size: 1.1rem;
+    }
+    
+    .card-header.gainers {
+      background: linear-gradient(135deg, var(--success), #4cc9f0);
+      color: white;
+    }
+    
+    .card-header.losers {
+      background: linear-gradient(135deg, var(--danger), #f72585);
+      color: white;
+    }
+    
+    .card-header.trending {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+    }
+    
+    /* Stock Card Styles */
+    .stock-card {
+      height: 100%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stock-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+    
+    .stock-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stock-card .card-title {
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .stock-card .card-text {
+      margin-bottom: 0.5rem;
+    }
+    
+    .stock-card .price {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+    }
+    
+    .stock-card .change {
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      display: inline-block;
+    }
+    
+    .stock-card .positive {
+      background-color: rgba(76, 201, 240, 0.15);
+      color: var(--success);
+    }
+    
+    .stock-card .negative {
+      background-color: rgba(247, 37, 133, 0.15);
+      color: var(--danger);
+    }
+    
+    /* List Group Styles */
+    .list-group-item {
+      border: 1px solid var(--border-color);
+      border-radius: 10px !important;
+      margin-bottom: 0.75rem;
+      transition: all 0.3s ease;
+      background: var(--card-bg);
+      padding: 1rem 1.25rem;
+    }
+    
+    .list-group-item:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .list-group-item .ticker {
+      font-weight: 600;
+      color: var(--primary);
+    }
+    
+    .list-group-item .name {
+      font-size: 0.85rem;
+      color: var(--text-color);
+      opacity: 0.8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 200px;
+    }
+    
+    .list-group-item .price {
+      font-weight: 600;
+    }
+    
+    /* Footer Styles */
+    footer {
+      background: var(--footer-bg);
+      color: white;
+      padding: 2rem 0;
+      margin-top: 4rem;
+      position: relative;
+      bottom: 0;
+      width: 100%;
+    }
+    
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .footer-text {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.95rem;
+    }
+    
+    .footer-heart {
+      color: #ff6b6b;
+      margin: 0 4px;
+    }
+    
+    /* Market Summary */
+    .market-summary {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .summary-card {
+      flex: 1;
+      min-width: 200px;
+      padding: 1.5rem;
+      border-radius: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .summary-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+    
+    .summary-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .summary-card .title {
+      font-size: 0.9rem;
+      color: var(--text-color);
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .summary-card .title i {
+      margin-right: 8px;
+      font-size: 1rem;
+    }
+    
+    .summary-card .value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+    
+    .summary-card .change {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+    }
+    
+    .summary-card .change i {
+      margin-right: 5px;
+    }
+    
+    /* Stock Market Guide */
+    .guide-buttons-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .guide-button {
+      width: 100%;
+      background: var(--card-bg);
+      border: 2px solid rgba(128, 128, 128, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      color: var(--text-color);
+    }
+    
+    .guide-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .guide-button.active {
+      border-color: var(--primary);
+      background: #f8f9ff;
+    }
+    
+    .level-beginner-btn:hover {
+      border-color: #28a745;
+    }
+    
+    .level-intermediate-btn:hover {
+      border-color: #ffc107;
+    }
+    
+    .level-advanced-btn:hover {
+      border-color: #dc3545;
+    }
+    
+    .guide-button-content {
+      width: 100%;
+    }
+    
+    .guide-button-title {
+      margin: 10px 0;
+      color: var(--text-color);
+      font-size: 1.25rem;
+    }
+    
+    .guide-button-desc {
+      color: var(--text-color);
+      opacity: 0.8;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+    
+    .guide-button-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+    
+    .expand-icon {
+      color: var(--primary);
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .guide-button.active .expand-icon {
+      transform: rotate(180deg);
+    }
+    
+    .guide-level-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .level-beginner { 
+      background: rgba(40, 167, 69, 0.2); 
+      color: #28a745; 
+      border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+    .level-intermediate { 
+      background: rgba(255, 193, 7, 0.2); 
+      color: #ffc107; 
+      border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+    .level-advanced { 
+      background: rgba(220, 53, 69, 0.2); 
+      color: #dc3545; 
+      border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+    
+    .guide-content {
+      display: none;
+      padding: 20px;
+      background: var(--card-bg);
+      border-radius: 8px;
+      margin-top: 15px;
+      color: var(--text-color);
+    }
+    
+    .guide-content.active {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .guide-section h6 {
+      color: var(--primary);
+      font-weight: 600;
+      margin-top: 15px;
+      margin-bottom: 10px;
+    }
+    
+    .guide-section ul {
+      padding-left: 20px;
+    }
+    
+    .guide-section ul li {
+      margin-bottom: 8px;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+      .search-form {
+        flex-direction: column;
+      }
+      
+      .search-btn {
+        width: 100%;
+      }
+      
+      .market-summary {
+        flex-direction: column;
+      }
+      
+      .summary-card {
+        width: 100%;
+      }
+      
+      .navbar-collapse {
+        padding-top: 1rem;
+      }
+      
+      .nav-link {
+        margin-bottom: 0.5rem;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 2rem 1rem;
+      }
+      
+      .marquee-content {
+        font-size: 0.85rem;
+        padding-right: 20px;
+      }
+      
+      .market-status {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        margin-right: 1rem;
+      }
+      
+      .marquee::before {
+        width: 120px; /* Smaller gradient mask on mobile */
+      }
+      
+      .summary-card .value {
+        font-size: 1.3rem;
+      }
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.6s ease forwards;
+    }
+    
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+    
+    /* Blinking animation for real-time updates */
+    @keyframes blink {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+    
+    .updating {
+      animation: blink 1.5s infinite;
+    }
+  </style>
+</head>
+<body>
+  <header class="py-1 py-lg-2">
+    <div class="container">
+      <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+          <a class="navbar-brand text-white" href="{{ url_for('home') }}">
+            <i class="fas fa-chart-line"></i>Stock Analyzer
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+              <li class="nav-item">
+                <a class="nav-link text-white active-nav" href="{{ url_for('home') }}">
+                  <i class="fas fa-home"></i>Home
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link text-white" href="{{ url_for('all_stocks') }}">
+                  <i class="fas fa-list"></i>All Stocks
+                </a>
+              </li>
+              {% if session.get('user') %}
+                <li class="nav-item">
+                  <a class="nav-link text-white" href="{{ url_for('watchlist') }}">
+                    <i class="fas fa-bookmark"></i>Watchlist
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-white" href="{{ url_for('logout') }}">
+                    <i class="fas fa-sign-out-alt"></i>Logout ({{ session.get('user') }})
+                  </a>
+                </li>
+              {% else %}
+                <li class="nav-item">
+                  <a class="nav-link text-white" href="{{ url_for('login') }}">
+                    <i class="fas fa-sign-in-alt"></i>Login
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link text-white" href="{{ url_for('signup') }}">
+                    <i class="fas fa-user-plus"></i>Sign Up
+                  </a>
+                </li>
+              {% endif %}
+              <li class="nav-item">
+                <button class="theme-toggle" id="themeToggle">
+                  <i class="fas fa-moon"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Market Ticker -->
+    <div class="marquee-container fade-in delay-5">
+      <div class="marquee">
+        <span class="market-status">Live Market</span>
+        <div class="marquee-content" id="market-ticker">
+          <span class="updating">Loading real-time market data...</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="text-center mb-4 fade-in"><i class="fas fa-chart-line me-2"></i>Stock Market Analysis</h3>
+
+    <!-- Search Form -->
+    <div class="search-container fade-in">
+      <form class="search-form" action="{{ url_for('analyze') }}" method="GET">
+        <input
+          type="text"
+          name="ticker"
+          class="form-control search-input"
+          placeholder="Search for stocks (e.g., INFY, RELIANCE, TCS)..."
+          required
+          aria-label="Stock ticker symbol"
+        >
+        <button class="btn btn-primary search-btn" type="submit">
+          <i class="fas fa-search"></i> Analyze
+        </button>
+      </form>
+    </div>
+
+    <!-- Top Gainers & Losers -->
+    <div class="row mt-4 g-4">
+      <div class="col-lg-6 fade-in delay-1">
+        <div class="card h-100">
+          <div class="card-header gainers">
+            <i class="fas fa-arrow-trend-up"></i>
+            <h5 class="mb-0">Top Gainers</h5>
+          </div>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush" id="top-gainers">
+              <li class="list-group-item text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 fade-in delay-2">
+        <div class="card h-100">
+          <div class="card-header losers">
+            <i class="fas fa-arrow-trend-down"></i>
+            <h5 class="mb-0">Top Losers</h5>
+          </div>
+          <div class="card-body p-0">
+            <ul class="list-group list-group-flush" id="top-losers">
+              <li class="list-group-item text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trending Stocks -->
+    <div class="card mt-5 fade-in delay-3">
+      <div class="card-header trending">
+        <i class="fas fa-fire"></i>
+        <h5 class="mb-0">Trending Stocks</h5>
+      </div>
+      <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="trending-stocks">
+          <div class="col">
+            <div class="card stock-card h-100 border-0">
+              <div class="card-body text-center">
+                <div class="spinner-border text-primary" role="status">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stock Market Guide -->
+    <div class="card mt-5 fade-in delay-4">
+      <div class="card-header" style="background: linear-gradient(135deg, var(--primary), #667eea); color: white; cursor: pointer;" onclick="toggleMainGuide()">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fas fa-graduation-cap"></i>
+            <h5 class="mb-0 d-inline">Stock Market Guide for Beginners</h5>
+          </div>
+          <i class="fas fa-chevron-down" id="mainGuideIcon" style="transition: transform 0.3s ease;"></i>
+        </div>
+      </div>
+      <div class="card-body" id="mainGuideContent" style="display: none;">
+        <div class="guide-buttons-container">
+          <!-- Beginner Level Button -->
+          <button class="guide-button level-beginner-btn" onclick="toggleGuide('beginner')">
+            <div class="guide-button-content">
+              <span class="guide-level-badge level-beginner">BEGINNER</span>
+              <h5 class="guide-button-title"><i class="fas fa-seedling me-2"></i>Getting Started</h5>
+              <p class="guide-button-desc">Learn the basics of stock market investing, key terms, and fundamental concepts.</p>
+              <div class="guide-button-footer">
+                <small class="text-muted"><i class="fas fa-clock me-1"></i>~15 min read</small>
+                <i class="fas fa-chevron-down expand-icon"></i>
+              </div>
+            </div>
+          </button>
+          
+          <!-- Intermediate Level Button -->
+          <button class="guide-button level-intermediate-btn" onclick="toggleGuide('intermediate')">
+            <div class="guide-button-content">
+              <span class="guide-level-badge level-intermediate">INTERMEDIATE</span>
+              <h5 class="guide-button-title"><i class="fas fa-chart-line me-2"></i>Analysis & Strategy</h5>
+              <p class="guide-button-desc">Understand technical and fundamental analysis, trading strategies, and risk management.</p>
+              <div class="guide-button-footer">
+                <small class="text-muted"><i class="fas fa-clock me-1"></i>~25 min read</small>
+                <i class="fas fa-chevron-down expand-icon"></i>
+              </div>
+            </div>
+          </button>
+          
+          <!-- Advanced Level Button -->
+          <button class="guide-button level-advanced-btn" onclick="toggleGuide('advanced')">
+            <div class="guide-button-content">
+              <span class="guide-level-badge level-advanced">ADVANCED</span>
+              <h5 class="guide-button-title"><i class="fas fa-rocket me-2"></i>Expert Techniques</h5>
+              <p class="guide-button-desc">Master advanced trading, options, derivatives, portfolio optimization, and market psychology.</p>
+              <div class="guide-button-footer">
+                <small class="text-muted"><i class="fas fa-clock me-1"></i>~30 min read</small>
+                <i class="fas fa-chevron-down expand-icon"></i>
+              </div>
+            </div>
+          </button>
+        </div>
+        
+        <!-- Guide Content Sections -->
+        <div id="beginner-content" class="guide-content">
+          <div class="guide-section">
+            <h4><i class="fas fa-book-open me-2"></i>Beginner Guide</h4>
+            
+            <h6>1. What is the Stock Market?</h6>
+            <p>The stock market is a platform where shares of publicly traded companies are bought and sold. It provides companies with access to capital and investors with opportunities to own a portion of successful businesses.</p>
+            
+            <h6>2. Key Terms to Know</h6>
+            <ul>
+              <li><strong>Stock/Share:</strong> A unit of ownership in a company</li>
+              <li><strong>Ticker Symbol:</strong> A unique code identifying a stock (e.g., AAPL for Apple)</li>
+              <li><strong>Market Cap:</strong> Total value of a company's outstanding shares</li>
+              <li><strong>Dividend:</strong> Portion of profits paid to shareholders</li>
+              <li><strong>Bull Market:</strong> Rising market prices</li>
+              <li><strong>Bear Market:</strong> Falling market prices</li>
+              <li><strong>IPO:</strong> Initial Public Offering - when a company first sells shares</li>
+            </ul>
+            
+            <h6>3. Types of Stocks</h6>
+            <ul>
+              <li><strong>Common Stock:</strong> Standard ownership with voting rights</li>
+              <li><strong>Preferred Stock:</strong> Priority for dividends but limited voting rights</li>
+              <li><strong>Growth Stocks:</strong> Companies expected to grow faster than market average</li>
+              <li><strong>Value Stocks:</strong> Undervalued companies trading below intrinsic value</li>
+              <li><strong>Dividend Stocks:</strong> Companies that regularly pay dividends</li>
+            </ul>
+            
+            <h6>4. How to Start Investing</h6>
+            <ul>
+              <li>Set clear financial goals and time horizons</li>
+              <li>Understand your risk tolerance</li>
+              <li>Open a brokerage account</li>
+              <li>Start with index funds or ETFs for diversification</li>
+              <li>Begin with small amounts and learn gradually</li>
+              <li>Never invest money you can't afford to lose</li>
+            </ul>
+            
+            <h6>5. Basic Investment Principles</h6>
+            <ul>
+              <li><strong>Diversification:</strong> Don't put all eggs in one basket</li>
+              <li><strong>Long-term thinking:</strong> Time in market beats timing the market</li>
+              <li><strong>Regular investing:</strong> Dollar-cost averaging reduces risk</li>
+              <li><strong>Research:</strong> Understand what you're investing in</li>
+              <li><strong>Patience:</strong> Avoid emotional decisions based on short-term fluctuations</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div id="intermediate-content" class="guide-content">
+          <div class="guide-section">
+            <h4><i class="fas fa-chart-bar me-2"></i>Intermediate Guide</h4>
+            
+            <h6>1. Fundamental Analysis</h6>
+            <ul>
+              <li><strong>P/E Ratio:</strong> Price-to-Earnings ratio measures valuation</li>
+              <li><strong>EPS:</strong> Earnings Per Share indicates profitability</li>
+              <li><strong>ROE:</strong> Return on Equity shows management efficiency</li>
+              <li><strong>Debt-to-Equity:</strong> Measures financial leverage</li>
+              <li><strong>Free Cash Flow:</strong> Cash available after expenses</li>
+              <li>Read financial statements: Income statement, balance sheet, cash flow</li>
+            </ul>
+            
+            <h6>2. Technical Analysis Basics</h6>
+            <ul>
+              <li><strong>Support & Resistance:</strong> Price levels where stocks tend to stop falling/rising</li>
+              <li><strong>Moving Averages:</strong> Smooth out price data (50-day, 200-day)</li>
+              <li><strong>RSI:</strong> Relative Strength Index identifies overbought/oversold conditions</li>
+              <li><strong>MACD:</strong> Moving Average Convergence Divergence for trend changes</li>
+              <li><strong>Volume Analysis:</strong> Trading volume confirms price movements</li>
+              <li><strong>Chart Patterns:</strong> Head & shoulders, triangles, double tops/bottoms</li>
+            </ul>
+            
+            <h6>3. Trading Strategies</h6>
+            <ul>
+              <li><strong>Value Investing:</strong> Buy undervalued stocks (Warren Buffett approach)</li>
+              <li><strong>Growth Investing:</strong> Focus on companies with high growth potential</li>
+              <li><strong>Dividend Investing:</strong> Build income through dividend-paying stocks</li>
+              <li><strong>Swing Trading:</strong> Hold positions for days or weeks</li>
+              <li><strong>Position Trading:</strong> Long-term holdings based on trends</li>
+            </ul>
+            
+            <h6>4. Risk Management</h6>
+            <ul>
+              <li><strong>Stop-Loss Orders:</strong> Automatically sell if price drops to specific level</li>
+              <li><strong>Position Sizing:</strong> Never risk more than 1-2% per trade</li>
+              <li><strong>Portfolio Allocation:</strong> Balance across sectors and asset classes</li>
+              <li><strong>Hedging:</strong> Use inverse positions to protect against losses</li>
+              <li><strong>Risk-Reward Ratio:</strong> Aim for at least 2:1 or 3:1 ratio</li>
+            </ul>
+            
+            <h6>5. Market Sectors & Industries</h6>
+            <ul>
+              <li>Technology, Healthcare, Financials, Consumer Discretionary</li>
+              <li>Energy, Materials, Industrials, Utilities</li>
+              <li>Real Estate, Communication Services, Consumer Staples</li>
+              <li>Understand sector rotation and economic cycles</li>
+              <li>Different sectors perform better in different market conditions</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div id="advanced-content" class="guide-content">
+          <div class="guide-section">
+            <h4><i class="fas fa-brain me-2"></i>Advanced Guide</h4>
+            
+            <h6>1. Advanced Technical Analysis</h6>
+            <ul>
+              <li><strong>Elliott Wave Theory:</strong> Market moves in predictable wave patterns</li>
+              <li><strong>Fibonacci Retracements:</strong> Use mathematical ratios for entry/exit points</li>
+              <li><strong>Ichimoku Cloud:</strong> Comprehensive indicator system</li>
+              <li><strong>Volume Profile:</strong> Analyze trading activity at price levels</li>
+              <li><strong>Order Flow Analysis:</strong> Study buying/selling pressure</li>
+              <li><strong>Multiple Timeframe Analysis:</strong> Confirm trends across different periods</li>
+            </ul>
+            
+            <h6>2. Options Trading</h6>
+            <ul>
+              <li><strong>Call Options:</strong> Right to buy stock at strike price</li>
+              <li><strong>Put Options:</strong> Right to sell stock at strike price</li>
+              <li><strong>Greeks:</strong> Delta, Gamma, Theta, Vega measure option sensitivity</li>
+              <li><strong>Spreads:</strong> Bull, bear, calendar, and butterfly spreads</li>
+              <li><strong>Covered Calls:</strong> Generate income on owned stocks</li>
+              <li><strong>Protective Puts:</strong> Insurance against downside risk</li>
+            </ul>
+            
+            <h6>3. Portfolio Management</h6>
+            <ul>
+              <li><strong>Modern Portfolio Theory:</strong> Optimize risk-return tradeoff</li>
+              <li><strong>Sharpe Ratio:</strong> Measure risk-adjusted returns</li>
+              <li><strong>Alpha & Beta:</strong> Performance vs market and volatility</li>
+              <li><strong>Rebalancing:</strong> Maintain target asset allocation</li>
+              <li><strong>Tax-Loss Harvesting:</strong> Offset gains with losses</li>
+              <li><strong>Factor Investing:</strong> Value, momentum, quality, size factors</li>
+            </ul>
+            
+            <h6>4. Market Psychology & Behavioral Finance</h6>
+            <ul>
+              <li><strong>Cognitive Biases:</strong> Confirmation bias, anchoring, recency bias</li>
+              <li><strong>Herd Mentality:</strong> Avoid following the crowd blindly</li>
+              <li><strong>Fear & Greed Index:</strong> Gauge market sentiment</li>
+              <li><strong>Contrarian Investing:</strong> Profit from market overreactions</li>
+              <li><strong>Emotional Discipline:</strong> Stick to strategy despite volatility</li>
+              <li><strong>Market Cycles:</strong> Recognize euphoria, panic, and capitulation phases</li>
+            </ul>
+            
+            <h6>5. Advanced Concepts</h6>
+            <ul>
+              <li><strong>Algorithmic Trading:</strong> Automated trading systems</li>
+              <li><strong>High-Frequency Trading:</strong> Execute thousands of trades per second</li>
+              <li><strong>Derivatives:</strong> Futures, swaps, forwards</li>
+              <li><strong>Margin Trading:</strong> Leverage borrowed funds (high risk)</li>
+              <li><strong>Short Selling:</strong> Profit from declining prices</li>
+              <li><strong>Pair Trading:</strong> Long one stock, short related stock</li>
+              <li><strong>Arbitrage:</strong> Exploit price differences across markets</li>
+            </ul>
+            
+            <h6>6. Macroeconomic Factors</h6>
+            <ul>
+              <li>Interest rates and Federal Reserve policy</li>
+              <li>Inflation and its impact on stocks</li>
+              <li>GDP growth and economic indicators</li>
+              <li>Geopolitical events and market reactions</li>
+              <li>Currency fluctuations for international stocks</li>
+              <li>Commodity prices and sector correlations</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container text-center">
+      <p class="mb-1 footer-text">&copy; {{ year | default(2025) }} Stock Analyzer. All rights reserved.</p>
+      <p class="footer-text">MADE FOR STOCK ENTHUSIAST</p>
+      <div class="mt-2">
+        <a href="#" class="text-white me-3"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white me-3"><i class="fab fa-linkedin"></i></a>
+        <a href="#" class="text-white me-3"><i class="fab fa-github"></i></a>
+        <a href="#" class="text-white"><i class="fas fa-envelope"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <script>
+    // Theme Toggle Functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const htmlElement = document.documentElement;
+    
+    // Check for saved theme preference or use preferred color scheme
+    const savedTheme = localStorage.getItem('theme') || 
+                      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    htmlElement.setAttribute('data-bs-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+    
+    // Toggle theme
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-bs-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      htmlElement.setAttribute('data-bs-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateThemeIcon(newTheme);
+    });
+    
+    function updateThemeIcon(theme) {
+      const icon = themeToggle.querySelector('i');
+      if (theme === 'dark') {
+        icon.classList.remove('fa-moon');
+        icon.classList.add('fa-sun');
+      } else {
+        icon.classList.remove('fa-sun');
+        icon.classList.add('fa-moon');
+      }
+    }
+    
+    // DOM Elements
+    const marketTicker = document.getElementById('market-ticker');
+    const topGainersList = document.getElementById('top-gainers');
+    const topLosersList = document.getElementById('top-losers');
+    const trendingStocksContainer = document.getElementById('trending-stocks');
+    
+    // Guide toggle functionality
+    let currentOpenGuide = null;
+    
+    // API Endpoints
+    const TRENDING_API = '/api/trending';
+    const WATCHLIST_API = '/api/watchlist/add';
+    const INDICES_API = '/api/indices';
+    
+    // Store stocks data globally for ticker
+    let liveStocksData = [];
+    
+    // Update live market ticker with indices and stocks
+    function updateLiveTicker(indices) {
+      if (!marketTicker) return;
+      
+      let tickerItems = [];
+      
+      // Add indices if available
+      if (indices && indices.length > 0) {
+        const indicesHTML = indices.map(index => {
+          const isPositive = parseFloat(index.change) >= 0;
+          const changeClass = isPositive ? 'positive' : 'negative';
+          const arrow = isPositive ? '▲' : '▼';
+          return `<span class="${changeClass}" style="margin: 0 15px;">${index.name}: ₹${index.value} ${arrow} ${index.change}%</span>`;
+        });
+        tickerItems = tickerItems.concat(indicesHTML);
+      }
+      
+      // Add stocks if available
+      if (liveStocksData && liveStocksData.length > 0) {
+        const stocksHTML = liveStocksData
+          .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+          .slice(0, 15) // Show top 15 movers
+          .map(stock => {
+            const isPositive = stock.change >= 0;
+            const changeClass = isPositive ? 'positive' : 'negative';
+            const arrow = isPositive ? '▲' : '▼';
+            return `<span class="${changeClass}" style="margin: 0 15px;">${stock.ticker}: ₹${stock.price.toFixed(2)} ${arrow} ${stock.change.toFixed(2)}%</span>`;
+          });
+        tickerItems = tickerItems.concat(stocksHTML);
+      }
+      
+      if (tickerItems.length > 0) {
+        // Duplicate the content for seamless loop
+        marketTicker.innerHTML = tickerItems.join(' | ') + ' | ' + tickerItems.join(' | ');
+      } else {
+        marketTicker.innerHTML = '<span style="margin: 0 15px;">Loading market data...</span>';
+      }
+    }
+    
+    // Fetch indices data (NIFTY 50, SENSEX, etc.)
+    async function fetchIndicesData() {
+      try {
+        const response = await fetch(INDICES_API);
+        const data = await response.json();
+        
+        // Check if we got valid data
+        if (!data || !data.indices || data.indices.length === 0) {
+          console.warn('No indices data received, using defaults');
+          // Use default data instead of throwing error
+          const defaultData = {
+            indices: [
+              {'name': 'NIFTY 50', 'value': '24,500.00', 'change': 0.5},
+              {'name': 'SENSEX', 'value': '80,500.00', 'change': 0.3},
+              {'name': 'NIFTY BANK', 'value': '52,000.00', 'change': -0.2},
+              {'name': 'INDIA VIX', 'value': '13.50', 'change': 1.2}
+            ]
+          };
+          updateLiveTicker(defaultData.indices);
+          return;
+        }
+        
+        // Update live ticker with indices
+        updateLiveTicker(data.indices || []);
+      } catch (error) {
+        console.error('Error fetching indices:', error);
+        // Silently use default data instead of showing error alert
+        const defaultData = {
+          indices: [
+            {'name': 'NIFTY 50', 'value': '24,500.00', 'change': 0.5},
+            {'name': 'SENSEX', 'value': '80,500.00', 'change': 0.3},
+            {'name': 'NIFTY BANK', 'value': '52,000.00', 'change': -0.2},
+            {'name': 'INDIA VIX', 'value': '13.50', 'change': 1.2}
+          ]
+        };
+        updateLiveTicker(defaultData.indices);
+      }
+    }
+    
+    // Fetch trending stocks data
+    async function fetchTrendingStocks() {
+      try {
+        const response = await fetch(TRENDING_API);
+        if (!response.ok) throw new Error('Failed to fetch stock data');
+        const stocks = await response.json();
+        
+        // Store stocks data for live ticker
+        liveStocksData = stocks;
+        
+        // Update market ticker (will now include both indices and stocks)
+        updateLiveTicker(); // Re-render ticker with stocks
+        
+        // Update top gainers and losers
+        updateTopMovers(stocks);
+        
+        // Render trending stocks
+        renderTrendingStocks(stocks);
+      } catch (error) {
+        console.error('Error fetching trending stocks:', error);
+        showError('Failed to load stock data. Please try again later.');
+      }
+    }
+    
+
+    
+    // Update top movers lists
+    function updateTopMovers(stocks) {
+      // Top Gainers
+      const gainers = stocks
+        .sort((a, b) => b.change - a.change)
+        .slice(0, 5);
+      
+      topGainersList.innerHTML = gainers.length > 0 
+        ? gainers.map(createMoverItem).join('') 
+        : '<li class="list-group-item text-muted">No gainers available</li>';
+      
+      // Top Losers
+      const losers = stocks
+        .sort((a, b) => a.change - b.change)
+        .slice(0, 5);
+      
+      topLosersList.innerHTML = losers.length > 0 
+        ? losers.map(createMoverItem).join('') 
+        : '<li class="list-group-item text-muted">No losers available</li>';
+    }
+    
+    // Create list item for top movers
+    function createMoverItem(stock) {
+      const isGainer = stock.change >= 0;
+      return `
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="ticker">${stock.ticker}</span>
+              <div class="name">${stock.name}</div>
+            </div>
+            <div class="text-end">
+              <div class="price">₹${stock.price.toFixed(2)}</div>
+              <div class="change ${isGainer ? 'positive' : 'negative'}">
+                <i class="fas ${isGainer ? 'fa-caret-up' : 'fa-caret-down'}"></i>
+                ${isGainer ? '+' : ''}${stock.change.toFixed(2)}%
+              </div>
+            </div>
+          </div>
+        </li>
+      `;
+    }
+    
+    // Render trending stocks grid
+    function renderTrendingStocks(stocks) {
+      if (!stocks || stocks.length === 0) {
+        trendingStocksContainer.innerHTML = `
+          <div class="col-12">
+            <div class="alert alert-warning mb-0">No trending stocks available</div>
+          </div>
+        `;
+        return;
+      }
+      
+      trendingStocksContainer.innerHTML = stocks
+        .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+        .slice(0, 6) // Show top 6 trending stocks
+        .map(stock => createStockCard(stock))
+        .join('');
+    }
+    
+    // Create stock card element
+    function createStockCard(stock) {
+      const isGainer = stock.change >= 0;
+      const isLoggedIn = {{ 'true' if session.get('user') else 'false' }};
+      
+      return `
+        <div class="col">
+          <div class="card stock-card h-100">
+            <div class="card-body">
+              <h5 class="card-title">${stock.ticker}</h5>
+              <p class="card-text text-muted mb-1">${stock.name}</p>
+              <p class="price">₹${stock.price.toFixed(2)}</p>
+              <span class="change ${isGainer ? 'positive' : 'negative'}">
+                <i class="fas ${isGainer ? 'fa-caret-up' : 'fa-caret-down'}"></i>
+                ${isGainer ? '+' : ''}${stock.change.toFixed(2)}%
+              </span>
+              <div class="d-flex justify-content-between mt-3">
+                <a href="/analyze?ticker=${stock.ticker}" class="btn btn-sm btn-outline-primary">Analyze</a>
+                ${isLoggedIn ? `
+                  <button class="btn btn-sm btn-outline-success" onclick="addToWatchlist('${stock.ticker}')">
+                    <i class="fas fa-plus"></i> Watchlist
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Toggle main guide visibility
+    function toggleMainGuide() {
+      const content = document.getElementById('mainGuideContent');
+      const icon = document.getElementById('mainGuideIcon');
+      
+      if (content.style.display === 'none') {
+        content.style.display = 'block';
+        icon.style.transform = 'rotate(180deg)';
+      } else {
+        content.style.display = 'none';
+        icon.style.transform = 'rotate(0deg)';
+      }
+    }
+    
+    // Toggle guide content
+    function toggleGuide(level) {
+      const contentId = level + '-content';
+      const content = document.getElementById(contentId);
+      const button = event.currentTarget;
+      
+      // Remove active class from all buttons
+      document.querySelectorAll('.guide-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      // If clicking the same guide, toggle it
+      if (currentOpenGuide === contentId) {
+        content.classList.remove('active');
+        currentOpenGuide = null;
+      } else {
+        // Close previously open guide
+        if (currentOpenGuide) {
+          document.getElementById(currentOpenGuide).classList.remove('active');
+        }
+        // Open new guide and mark button as active
+        content.classList.add('active');
+        button.classList.add('active');
+        currentOpenGuide = contentId;
+        
+        // Smooth scroll to content
+        setTimeout(() => {
+          content.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+      }
+    }
+    
+    // Add stock to watchlist
+    async function addToWatchlist(ticker) {
+      try {
+        const response = await fetch(WATCHLIST_API, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ticker })
+        });
+        
+        const result = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(result.error || 'Failed to add to watchlist');
+        }
+        
+        showAlert(`Successfully added ${ticker} to your watchlist!`, 'success');
+      } catch (error) {
+        showAlert(`Error: ${error.message}`, 'danger');
+        console.error('Watchlist error:', error);
+      }
+    }
+    
+    // Show alert message
+    function showAlert(message, type) {
+      const alert = document.createElement('div');
+      alert.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
+      alert.style.zIndex = '1100';
+      alert.style.maxWidth = '350px';
+      alert.style.animation = 'fadeIn 0.3s ease forwards';
+      alert.innerHTML = `
+        <div class="d-flex align-items-center">
+          <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} me-2"></i>
+          <div>${message}</div>
+          <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+      
+      document.body.appendChild(alert);
+      
+      // Auto-dismiss after 5 seconds
+      setTimeout(() => {
+        alert.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => alert.remove(), 300);
+      }, 5000);
+      
+      // Manual dismiss
+      alert.querySelector('.btn-close').addEventListener('click', () => {
+        alert.style.animation = 'fadeOut 0.3s ease forwards';
+        setTimeout(() => alert.remove(), 300);
+      });
+    }
+    
+    // Show error message
+    function showError(message) {
+      trendingStocksContainer.innerHTML = `
+        <div class="col-12">
+          <div class="alert alert-danger mb-0">${message}</div>
+        </div>
+      `;
+      topGainersList.innerHTML = `<li class="list-group-item text-muted">${message}</li>`;
+      topLosersList.innerHTML = `<li class="list-group-item text-muted">${message}</li>`;
+    }
+    
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchIndicesData();
+      fetchTrendingStocks();
+      // Refresh data every 2 minutes for real-time feel
+      setInterval(fetchTrendingStocks, 2 * 60 * 1000);
+      setInterval(fetchIndicesData, 2 * 60 * 1000);
+    });
+  </script>
+</body>
+</html>

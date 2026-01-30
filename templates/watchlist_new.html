@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NEW WATCHLIST TEST</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .alert-box { background: green; color: white; padding: 20px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="alert-box">
+        <h1>THIS IS THE NEW TEMPLATE - VERSION 3.0</h1>
+        <p>If you see this, Flask is serving the new file!</p>
+    </div>
+    
+    <button onclick="testRemove('TEST123')" style="padding: 20px; font-size: 20px;">
+        CLICK TO TEST REMOVE
+    </button>
+    
+    <div id="result"></div>
+    
+    <script>
+        console.log('NEW TEMPLATE LOADED - VERSION 3.0');
+        alert('NEW TEMPLATE IS WORKING!');
+        
+        function testRemove(ticker) {
+            alert('Remove called with: ' + ticker);
+            document.getElementById('result').innerHTML = 
+                '<div class="alert-box">Remove function called with ticker: ' + ticker + '</div>';
+                
+            fetch('/api/watchlist/' + ticker, {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Success: ' + JSON.stringify(data));
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
