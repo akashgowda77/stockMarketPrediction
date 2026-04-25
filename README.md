@@ -138,7 +138,6 @@ STOCK_PREDICTION/
 - Mobile responsive UI
 
 💼 Project Impact
-   This project demonstrates:
 - Full-stack development skills
 - Machine learning integration
 - Real-time API handling
