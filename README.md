@@ -131,16 +131,16 @@ STOCK_PREDICTION/
 - MongoDB TLS/SSL certificate verification via `certifi`
 
 📈 Future Improvements
-Advanced ML models (LSTM, ARIMA)
-Interactive charts (Plotly)
-Portfolio tracking system
-Price alerts & notifications
-Mobile responsive UI
+- Advanced ML models (LSTM, ARIMA)
+- Interactive charts (Plotly)
+- Portfolio tracking system
+- Price alerts & notifications
+- Mobile responsive UI
 
 💼 Project Impact
 This project demonstrates:
-Full-stack development skills
-Machine learning integration
-Real-time API handling
-Secure authentication systems
-Cloud deployment experience
+- Full-stack development skills
+- Machine learning integration
+- Real-time API handling
+- Secure authentication systems
+- Cloud deployment experience
