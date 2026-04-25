@@ -17,7 +17,8 @@ Data: yfinance, pandas, numpy
 Deployment: Render (Web Service)
 Local Setup
 1. Clone the repository
-git clone https://github.com/ChiragHS-MYS/STOCK_PREDICTION.git
+git clone https://github.com/akashgowda77/stockMarketPrediction
+.git
 cd STOCK_PREDICTION
 2. Create a virtual environment
 python -m venv .venv
