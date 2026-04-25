@@ -26,7 +26,7 @@ A Flask-based web application for Indian stock market analysis, prediction, and 
 
 ```bash
 git clone https://github.com/akashgowda77/stockMarketPrediction.git
-cd STOCK_PREDICTION
+cd stockMarketPrediction
 ```
 
 ### 2. Create a virtual environment
