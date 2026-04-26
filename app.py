@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, session, url_for
 from flask_cors import CORS
-from flask_pymongo import PyMongo
-import urllib
+from pymongo import MongoClient
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import yfinance as yf
@@ -20,9 +19,6 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import time
 from bs4 import BeautifulSoup
-from  urllib.parse import quote_plus
-import certifi
-import urllib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
@@ -31,6 +27,11 @@ app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 load_dotenv()
 
+print(f"[STARTUP] Flask app initializing...")
+print(f"[STARTUP] PORT env: {os.getenv('PORT', 'not set')}")
+print(f"[STARTUP] MONGO_URI set: {'yes' if os.getenv('MONGO_URI') else 'no'}")
+print(f"[STARTUP] SECRET_KEY set: {'yes' if os.getenv('SECRET_KEY') else 'no'}")
+
 # Disable template caching for development
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -38,25 +39,42 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 # Session Security
 
 #MongoDB Configuration
+mongo_uri = os.getenv("MONGO_URI")
 
-username = "Stockuser"  # Updated to match Atlas
-password = urllib.parse.quote_plus("Anthonyjc@14")  # Ensures @ becomes %40
-cluster_url = "stock-app.nvlvlky.mongodb.net"
-db_name = "Stockuser"  # Verify this matches your Atlas DB name
+if not mongo_uri:
+    raise ValueError(
+        "MONGO_URI is not set in environment variables. "
+        "Please copy .env.example to .env and fill in your MongoDB connection string. "
+        "See README.md for setup instructions."
+    )
 
-app.config["MONGO_URI"] = (
-    f"mongodb+srv://{username}:{password}@{cluster_url}/"
-    f"{db_name}?retryWrites=true&w=majority&appName=Stock-app"
-)
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", os.urandom(24))
+app.config["MONGO_URI"] = mongo_uri
 
-# Initialize MongoDB with TLS/SSL certificate
-mongo = PyMongo(app, tlsCAFile=certifi.where())
-db = mongo.db  # This will automatically use the database from MONGO_URI
+# SECRET_KEY: required for session security
+secret_key = os.getenv("SECRET_KEY")
+if not secret_key:
+    raise ValueError(
+        "SECRET_KEY is not set in environment variables. "
+        "Generate a strong random string and set it as SECRET_KEY. "
+        "See README.md for setup instructions."
+    )
+app.config["SECRET_KEY"] = secret_key
+
+# Initialize MongoDB directly with MongoClient (bypasses Flask-PyMongo TLS issues on Render)
+# Extract database name from URI or env var (get_default_database fails if URI has no db)
+from urllib.parse import urlparse
+parsed = urlparse(mongo_uri)
+db_name = parsed.path.lstrip('/') or os.getenv("MONGO_DB_NAME", "Stockuser")
+if '?' in db_name:
+    db_name = db_name.split('?')[0]
+
+client = MongoClient(mongo_uri)
+db = client[db_name]
+print(f"[STARTUP] MongoDB database: {db_name}")
 
 # Test connection
 try:
-    mongo.db.command("ping")
+    client.admin.command("ping")
     print("MongoDB connection successful!")
 except Exception as e:
     print(f"MongoDB connection failed: {e}")
@@ -196,9 +214,20 @@ def get_chart_data(ticker, cache_bust=datetime.now().strftime('%Y%m%d')):
                 std = np.sqrt(mse)
 
                 last_date = pd.to_datetime(hist['Date'].iloc[-1])
-                future_days = np.arange(len(hist), len(hist) + 30).reshape(-1, 1)
-                future_dates = [(last_date + timedelta(days=i)).strftime('%Y-%m-%d') for i in range(1, 31)]
-                predicted_prices = model.predict(future_days)
+                # Generate future dates skipping weekends (only trading days)
+                future_dates = []
+                current_date = last_date
+                trading_days_needed = 30
+                
+                while len(future_dates) < trading_days_needed:
+                    current_date += timedelta(days=1)
+                    # Skip weekends (Saturday=5, Sunday=6)
+                    if current_date.weekday() < 5:  # Monday=0, Friday=4
+                        future_dates.append(current_date.strftime('%Y-%m-%d'))
+                
+                # Create day numbers for prediction (extend from last historical day)
+                future_day_numbers = np.arange(len(hist), len(hist) + len(future_dates)).reshape(-1, 1)
+                predicted_prices = model.predict(future_day_numbers)
                 predicted_upper = predicted_prices + std
                 predicted_lower = predicted_prices - std
 
@@ -217,7 +246,7 @@ def get_chart_data(ticker, cache_bust=datetime.now().strftime('%Y%m%d')):
                         'PredictedUpper': None,
                         'PredictedLower': None
                     })
-                for i in range(30):
+                for i in range(len(future_dates)):
                     data.append({
                         'Date': future_dates[i],
                         'Open': None,
@@ -383,7 +412,7 @@ def watchlist_test():
 @login_required
 def watchlist():
     user = session['user']
-    user_watchlist = mongo.db.watchlists.find_one({'user': user}) or {'tickers': []}
+    user_watchlist = db.watchlists.find_one({'user': user}) or {'tickers': []}
     watchlist_data = get_watchlist_data(user_watchlist.get('tickers', []))
     
     # Force template reload
@@ -399,7 +428,7 @@ def login():
         password = request.form.get('password')
         if not username or not password:
             return render_template('login.html', error="Username and password are required.")
-        user_record = mongo.db.users.find_one({'username': username})
+        user_record = db.users.find_one({'username': username})
         if user_record and check_password_hash(user_record['password'], password):
             session['user'] = username
             return redirect(url_for('home'))
@@ -416,12 +445,12 @@ def signup():
             return render_template('signup.html', error="Username and password are required.")
         if not re.match(r'^[a-zA-Z0-9_]{3,20}$', username):
             return render_template('signup.html', error="Username must be 3-20 characters, alphanumeric or underscore.")
-        existing_user = mongo.db.users.find_one({'username': username})
+        existing_user = db.users.find_one({'username': username})
         if existing_user:
             return render_template('signup.html', error="Username already exists!")
         hashed_pw = generate_password_hash(password, method='pbkdf2:sha256', salt_length=16)
-        mongo.db.users.insert_one({'username': username, 'password': hashed_pw})
-        mongo.db.watchlists.insert_one({'user': username, 'tickers': []})
+        db.users.insert_one({'username': username, 'password': hashed_pw})
+        db.watchlists.insert_one({'user': username, 'tickers': []})
         session['user'] = username
         return redirect(url_for('home'))
     return render_template('signup.html')
@@ -480,7 +509,7 @@ def get_watchlist():
     if 'user' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
     user = session['user']
-    watchlist = mongo.db.watchlists.find_one({'user': user}) or {'tickers': []}
+    watchlist = db.watchlists.find_one({'user': user}) or {'tickers': []}
     return jsonify(get_watchlist_data(watchlist.get('tickers', [])))
 
 @app.route('/api/watchlist/count', methods=['GET'])
@@ -488,7 +517,7 @@ def get_watchlist_count():
     if 'user' not in session:
         return jsonify({'count': 0})
     user = session['user']
-    watchlist = mongo.db.watchlists.find_one({'user': user}) or {'tickers': []}
+    watchlist = db.watchlists.find_one({'user': user}) or {'tickers': []}
     return jsonify({'count': len(watchlist.get('tickers', []))})
 
 @app.route('/api/watchlist/add', methods=['POST'])
@@ -503,7 +532,7 @@ def add_to_watchlist():
     stock_data = get_stock_data(ticker)
     if not stock_data:
         return jsonify({'error': 'Invalid or unavailable ticker.'}), 400
-    mongo.db.watchlists.update_one(
+    db.watchlists.update_one(
         {'user': user},
         {'$addToSet': {'tickers': ticker}},
         upsert=True
@@ -530,7 +559,7 @@ def remove_from_watchlist(ticker):
         print(f'Removing {ticker_upper} from watchlist for {user}')
         
         # Remove from watchlists collection using $pull operator
-        result = mongo.db.watchlists.update_one(
+        result = db.watchlists.update_one(
             {'user': user},
             {'$pull': {'tickers': ticker_upper}}
         )
