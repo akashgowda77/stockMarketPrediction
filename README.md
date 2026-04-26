@@ -142,4 +142,4 @@ STOCK_PREDICTION/
 - Machine learning integration
 - Real-time API handling
 - Secure authentication systems
-- Cloud deployment experience
+- Cloud deployment experience   
